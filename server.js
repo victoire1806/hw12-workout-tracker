@@ -1,27 +1,38 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const morgan = require("morgan");
+const express = require('express');
+const path = require('path');
 
-const PORT = process.env.PORT || 3000;
+// Database, Routes/Controllers modules/packages
+const mongoose = require('mongoose');
+const logger = require('morgan');
 
+const routes = require('./routes');
+
+// Server setup
+const PORT = process.env.PORT || 3001;
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
+// Set public folder path
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Middleware - logger
+app.use(logger('dev'));
+
+// Data parsing
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static("public"));
+// Routes
+app.use(routes);
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/budget", {
-  useNewUrlParser: true,
-  useFindAndModify: false,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-});
+// Database connection
+mongoose
+  .connect(process.env.MONGODB_URI || 'mongodb://localhost/workoutDB', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  })
+  .then(() => console.log('MongoDB connected'));
 
-// routes
-app.use(require("./routes/api.js"));
-app.use(require("./routes/htmlRoutes.js"));
-
-app.listen(PORT, () => {
-  console.log(`App running on port ${PORT}!`);
-});
+// Start server
+app.listen(PORT, () => console.log(`App running on port ${PORT}!`));

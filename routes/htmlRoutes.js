@@ -1,11 +1,14 @@
-const router = require("express").Router();
-const workout = require("../public/workout");
 
-router.get("/api/workouts/", (req, res) => {
-    workout.find({}).then(workout => {
-        console.log("workout : " + workout);
-        res.json(workout);
-      }).catch(err => {
-        res.json(err);
-      });
-  });
+const router = require('express').Router();
+const { htmlController } = require('../controller');
+
+// Homepage
+router.get('/', htmlController.viewHomePage);
+
+// Exercise page
+router.get('/exercise', htmlController.viewExercisePage);
+
+// Stats page
+router.get('/stats', htmlController.viewStatsPage);
+
+module.exports = router;
